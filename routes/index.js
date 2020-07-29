@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
   const gitHubUrl = `https://${userName}:${password}@github.com/${userName}/${repo}`;
 // add local git config like username and email
   simpleGit.addConfig('user.email','mmccoopp99@gmail.com');
-  simpleGit.addConfig('user.name','Ryan Love');
+  simpleGit.addConfig('user.name','ryan-love');
 // Add remore repo url as origin to repo
   simpleGitPromise.addRemote('origin',gitHubUrl);
 // Add all files for commit
