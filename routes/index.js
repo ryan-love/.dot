@@ -16,25 +16,28 @@ const simpleGitPromise = require('simple-git/promise')();
 /* GET home page. */
 router.get('/', function(req, res, next) {
     simpleGit.addConfig("user.username","ryan-love").then((user)=>{
+        simpleGit.addConfig("user.profileUrl",`https://${process.env.GITU}:${process.env.GITP}@github.com/ryan-love`).then((profile)=>{
     simpleGit.status().then((data,err)=> {
         console.log(data)
         simpleGit.commit("index.js commit using simple-git", "./routes/index.js").then((commit) => {
             console.log(commit)
-            simpleGit.push("https://github.com/ryan-love/.dot.git", "master").then((push) => {
+            simpleGit.push(`https://${process.env.GITU}:${process.env.GITP}@github.com/ryan-love/.dot.git`, "master").then((push) => {
                 Settings.create({
                     setGit: {
                         status: data,
                         commit: commit,
                         push: push,
-                        user:user
+                        user:user,
+                        profile:profile
                     }
-                })
+                }).then(result=>res.json(result))
             })
         })
     })
+        })
     })
 
-  res.render("index");
+
 });
 
 module.exports = router;
