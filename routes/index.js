@@ -13,19 +13,19 @@ router.get('/', function(req, res, next) {
   // change current directory to repo directory in local
   shellJs.cd('C:\\Users\\Ryan Love\\WebstormProjects\\.dot');
 // Repo name
-  const repo = '.do';  //Repo name
+  const repo = '.dot';  //Repo name
 // User name and password of your GitHub
   const userName = process.env.GITU;
   const password = process.env.GITP;
 // Set up GitHub url like this so no manual entry of user pass needed
-  const gitHubUrl = `https://${userName}:${password}@github.com/${userName}/${repo}`;
+  const gitHubUrl = `https://github.com/ryan-love/.dot.git`;
 // add local git config like username and email
   simpleGit.addConfig('user.email','mmccoopp99@gmail.com');
   simpleGit.addConfig('user.name','ryan-love');
 // Add remore repo url as origin to repo
   simpleGitPromise.addRemote('origin',gitHubUrl);
 // Add all files for commit
-  simpleGitPromise.add('README.md')
+  simpleGitPromise.add('.')
       .then(
           (addSuccess) => {
             console.log(addSuccess);
@@ -41,7 +41,7 @@ router.get('/', function(req, res, next) {
             console.log('failed commmit '+ failed);
           });
 // Finally push to online repository
-  simpleGitPromise.push('origin','master')
+  simpleGitPromise.push('origin','test')
       .then((success) => {
         console.log('repo successfully pushed ' + JSON.stringify(success));
       },(failed)=> {
