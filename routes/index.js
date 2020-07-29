@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
   // change current directory to repo directory in local
   shellJs.cd('C:\\Users\\Ryan Love\\WebstormProjects\\.dot');
 // Repo name
-  const repo = '.dot';  //Repo name
+  const repo = '.do';  //Repo name
 // User name and password of your GitHub
   const userName = process.env.GITU;
   const password = process.env.GITP;
