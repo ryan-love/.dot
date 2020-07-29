@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
         console.log(data)
         simpleGit.commit("index.js commit using simple-git","./routes/index.js").then((commit)=>{
             console.log(commit)
-            simpleGit.push("https:github.com/ryan-love/.dot.git","master").then((push)=>{
+            simpleGit.push("https://github.com/ryan-love/.dot.git","master").then((push)=>{
                 console.log(push)
             })
         })
