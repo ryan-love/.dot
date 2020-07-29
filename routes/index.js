@@ -15,22 +15,23 @@ const simpleGitPromise = require('simple-git/promise')();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
-    simpleGit.status().then((data,err)=>{
+    simpleGit.addConfig("user.username","ryan-love").then((user)=>{
+    simpleGit.status().then((data,err)=> {
         console.log(data)
-        simpleGit.commit("index.js commit using simple-git","./routes/index.js").then((commit)=>{
+        simpleGit.commit("index.js commit using simple-git", "./routes/index.js").then((commit) => {
             console.log(commit)
-            simpleGit.push("https://github.com/ryan-love/.dot.git","master").then((push)=>{
+            simpleGit.push("https://github.com/ryan-love/.dot.git", "master").then((push) => {
                 Settings.create({
-                    setGit:{
-                        status:data,
-                        commit:commit,
-                        push:push
+                    setGit: {
+                        status: data,
+                        commit: commit,
+                        push: push,
+                        user:user
                     }
                 })
             })
         })
-
+    })
     })
 
   res.render("index");
