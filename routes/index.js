@@ -25,27 +25,27 @@ router.get('/', function(req, res, next) {
 // Add remore repo url as origin to repo
   simpleGitPromise.addRemote('origin',gitHubUrl);
 // Add all files for commit
-  simpleGitPromise.add('.')
+  simpleGitPromise.add('README.md')
       .then(
           (addSuccess) => {
             console.log(addSuccess);
           }, (failedAdd) => {
-            console.log('adding files failed');
+            console.log('adding files failed ' + failedAdd);
           });
 // Commit files as Initial Commit
-  simpleGitPromise.commit('Intial commit by simplegit')
+  simpleGitPromise.commit('README from simple-git')
       .then(
           (successCommit) => {
             console.log(successCommit);
           }, (failed) => {
-            console.log('failed commmit');
+            console.log('failed commmit '+ failed);
           });
 // Finally push to online repository
   simpleGitPromise.push('origin','master')
       .then((success) => {
-        console.log('repo successfully pushed');
+        console.log('repo successfully pushed ' + JSON.stringify(success));
       },(failed)=> {
-        console.log('repo push failed');
+        console.log('repo push failed ' + failed);
       });
   res.render("index");
 });
