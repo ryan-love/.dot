@@ -1,0 +1,25 @@
+<html>
+<%- include("mixins/head")%>
+
+<body class="container">
+<%- include("mixins/nav")%>
+
+<div class="row">
+
+    <div class="form-group col-md-6">
+
+
+
+        <form method="post" action="/project/<%=data.projectfiles%>/<%=data.fileID%>">
+
+            <input type="text" name="fileData" value=""/>
+
+            <button type="submit">Submit</button>
+        </form>
+
+
+    </div>
+
+</div>
+</body>
+</html>

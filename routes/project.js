@@ -3,10 +3,11 @@ var router = express.Router();
 var path = require("path");
 var fs = require("fs");
 var crypto = require("crypto")
+var bcrypt =require("bcrypt")
 
 var Sequelize = require("sequelize");
 const sequelize = new Sequelize(`${process.env.DB_TYPE}://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_URL}:${process.env.DB_PORT}/${process.env.DB_DEVELOPMENT_NAME}`);
-
+const Op = Sequelize.Op
 // Import models
 const Project = sequelize.import("../db/models/project")
 const File = sequelize.import("../db/models/file")
@@ -24,58 +25,50 @@ Project.hasMany(File,{foreignKey:"projectfiles",sourceKey:"projectID"})
 
 
 /* GET users listing. */
-router.get("/", (req, res) => {
-
-        Project.findAll({include:File,where:{userid:7}}).then((data)=>{
+router.get("/", authenticationMiddleware(), (req, res) => {
+console.log(req.user)
+        Project.findAll({where:{userid:req.user.id},include:{model:File,/*where:{fileData: "$2b$10$Oa6ojqNWm1LhhHmuR2hlq.OpU8iiTufYdNfvof.95RIB0sq9NoaVy"}*/}}).then((data)=>{
             console.log(data)
+            var t = "test";
             res.render("project",{project:data})
         })
 
 
 });
 
-router.post("/",(req,res)=>{
+router.post("/",(req,res)=> {
+
     Project.create({
         projectName: req.body.projectName,
-        userid: 2 //req.user
-    }).then( (project) =>{
-    File.create({
-        fileID: crypto.randomBytes(10).toString('hex'),
-        fileName: req.body.name,
-        fileField: [req.body.field],
-        fileData: [req.body.data],
-        fileType: req.body.type,
-        fileComments: req.body.comments,
-        projectfiles: project.projectID
-    }).then((file)=>{
-        File.findOne({where:{fileID:file.fileID}}).then((data)=>{
-            console.log(data)
-            let count = req.body.count;
-            if(!count) {
-                count = 1
+        userid: req.user.id
+    }).then((project) => {
+                                const dir = `${path.join(process.cwd() + "/files")}/${project.projectID}`
+                                if (!fs.existsSync(dir)) {
+                                    fs.mkdirSync(dir);
 
-                for (let i = 0; i < count; i++) {
-                    const dir = `${path.join(process.cwd() + "/files")}/${data.projectfiles}`
-                    if (!fs.existsSync(dir)) {
-                        fs.mkdirSync(dir);
-
-                        fs.appendFile(`${path.join(process.cwd() + "/files")}/${data.projectfiles}/${data.fileID}${data.fileType}`, `${data.fileField}=${data.fileData}\r\n`, function (err) {
-                            if (err) throw err;
-                            console.log('Saved!');
-                            res.send(data)
-                        });
-                    }
-                }
-            }
-        })})
-
+                                } else {
+                                    res.json("Directory already exists")
+                                }
 
     })
-
-
-
-
 })
+
+
+
+router.get("/:id", function (req,res,next) {
+
+    Project.findOne({where:{projectID:req.params.id},include:{model:File}}).then((data)=>{
+        res.render("singleProject", {data:data})
+    })
+})
+router.get("/:id/file/:fileID", function (req,res,next) {
+    console.log(req.params.fileID)
+    File.findOne({where:{projectfiles:req.params.id,fileID:req.params.fileID}}).then((data)=>{
+        res.render("fileEdit",{data:data})
+    })
+})
+
+
 
 router.get("/env/download", function (req,res,next) {
     File.findOne({
@@ -89,15 +82,71 @@ router.get("/env/download", function (req,res,next) {
     })
 })
 
+router.post("/:id/decrypt", (req,res)=>{
 
+        Project.findOne({where:{projectID:req.params.id},include:File}).then((data) => {
+            for (let i = 0; i < data.Files.length; i++) {
+                for (let j = 0; j < data.Files[i].fileField.length; j++) {
+                        if (bcrypt.compareSync(req.body.fileData,`${data.Files[i].fileData[j]}`)){
+                            res.render("fileEdit", {data:data})
+                        }else {
+                            return res.json({status:false,error:"Not correct value"})
+                        }
+                }
+            }
+        })
+})
+router.post("/:id", (req,res)=>{
+
+    bcrypt.hash(req.body.data, 10).then((hashData) => {
+        bcrypt.hash(req.body.data, 10).then((hashField) => {
+
+            File.create({
+                fileID: crypto.randomBytes(10).toString('hex'),
+                fileName: req.body.name,
+                fileField: [hashField],
+                fileData: [hashData],
+                fileType: req.body.type,
+                fileComments: req.body.comments,
+                projectfiles: req.params.id
+            }).then((file) => {
+                File.findOne({where: {fileID: file.fileID, projectfiles:req.params.id}}).then((data) => {
+                    console.log(data)
+                    let count = req.body.count;
+                    if (!count) {
+                        count = 1
+                        for (let i = 0; i < count; i++) {
+                            console.log("COUNT")
+                            const dir = `${path.join(process.cwd() + "/files")}/${data.projectfiles}`
+                            console.log(dir)
+                            if (fs.existsSync(dir)) {
+                                console.log("IF")
+                                fs.appendFile(`${path.join(process.cwd() + "/files")}/${data.projectfiles}/${data.fileID}${data.fileType}`, `${data.fileField}=${data.fileData}\r\n`, function (err) {
+                                    if (err) throw err;
+                                    console.log('Saved!');
+                                    res.send(data)
+                                });
+                            } else {
+                                fs.mkdirSync(dir);
+                                fs.appendFile(`${path.join(process.cwd() + "/files")}/${data.projectfiles}/${data.fileID}${data.fileType}`, `${data.fileField}=${data.fileData}\r\n`, function (err) {
+                                    if (err) throw err;
+                                    console.log('Saved!');
+                                    res.send(data)
+                                });
+                            }
+                        }
+                    }
+                })
+            })
+        })
+    })
+})
 
 function authenticationMiddleware () {
     return function (req, res, next) {
         if (req.isAuthenticated()) {
-            User.findOne({where: {id: req.user.id}}).then((uID) => {
-
-            })
-        } else  {
+            return next()
+        } else {
             res.redirect('/login')
         }
 

@@ -20,7 +20,9 @@
     "passport-local": "^1.0.0",
     "pg": "^8.3.0",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^5.22.3"
+    "sequelize": "^5.22.3",
+    "shelljs": "^0.8.4",
+    "simple-git": "^2.15.0"
   },
   "devDependencies": {
     "sequelize-cli": "^5.5.1"

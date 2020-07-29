@@ -29,6 +29,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var projectRouter = require('./routes/project');
+var settingsRouter = require('./routes/settings');
 
 var app = express();
 
@@ -40,10 +41,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(bodyParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  secret: 'keyboard cat',
+  secret: process.env.SECRET,
   store: sequelizeSessionStore,
   resave: false,
   saveUninitialized:false
@@ -56,6 +56,7 @@ app.use(passport.session());
 
 
 app.use('/', indexRouter);
+app.use("/settings", settingsRouter)
 app.use('/users', usersRouter);
 app.use('/login', loginRouter);
 app.use('/project', projectRouter);

@@ -1,0 +1,54 @@
+<html>
+<%- include("mixins/head")%>
+
+<body class="container">
+<%- include("mixins/nav")%>
+<% for(var i = 0; i < data.Files.length ; i++) {%>
+
+
+<a href="/project/<%= data.projectID %>/file/<%= data.Files[i].fileID %>"><%= data.Files[i].fileName %><%= data.Files[i].fileType %></a>
+<%}%>
+
+<div class="row">
+
+    <div class="form-group col-md-6">
+
+        <button onclick="showReturnForm()">Show Return</button>
+<div id="newReturn" style="display: none">
+        <form method="post" action="/project/<%=data.projectID%>/decrypt">
+
+            <h4>Return File Data</h4><input type="text" name="fileData"/>
+            <br>
+            <br>
+            <button type="submit">Submit</button>
+        </form>
+</div>
+<br>
+        <br>
+
+        <button onclick="showFileForm()">New File</button>
+        <div id="newFile" style="display: none">
+        <form method="post" action="/project/<%=data.projectID%>">
+
+                <span>File Name:<input type="text" id="file" name="name"/> Type:<input type="text" id="type" name="type"></span>
+            <br>
+                <div id="wrapper">
+                    Comments:<input type="text" id="comments" name="comments">
+                    <br>
+                    <span>Field:<input type="text" id="field" name="field"/> Data:<input type="text" id="data" name="data"></span>
+
+                    <input type="hidden" id="count" name="count">
+                </div>
+                <button type="submit">Submit</button>
+
+
+
+        </form>
+        <button onclick="add_fields(); countFields()">+</button>
+    </div>
+
+    </div>
+
+</div>
+</body>
+</html>

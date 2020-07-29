@@ -1,77 +1,49 @@
 <html>
-<head>
-    <!-- CSS only -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
-    <!-- JavaScript and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+<%- include("mixins/head")%>
 
-</head>
+<body class="container">
+<%- include("mixins/nav")%>
 
-<body>
-
-<script>
-    function add_fields() {
-        document.getElementById('wrapper').innerHTML += '<form method="post" action="/project"><div id="wrapper"><span>Field:<input type="text" id="field" name="field"/> Data:<input type="text" id="data" name="data"></span></div></form>\r\n';
-    }
-    function countFields() {
-        console.log(document.getElementById("count").value=document.querySelectorAll('[id^=field]').length)
-
-    }
-    function showOuput() {
-
-    }
-
-
-</script>
 <div class="row">
-<div class="form-group col-md-6">
+<div class="form-group col-md-2">
 <% for(var i = 0; i < project.length; i++) {%>
     <div>
-    <h2><%= project[i].projectName %></h2><%= project[i].projectID %>
+        <a href="/project/<%= project[i].projectID %>"><h2><%= project[i].projectName %></h2><h6 id="projectID"><%= project[i].projectID %></h6></a>
     </div>
     <% for(var j = 0; j < project[i].Files.length ; j++) {%>
-<div id="<%= project[i].Files[j].fileID %>" onclick="<%= project[i].Files[j].fileID %>()" onmouseover="" style="cursor: pointer;">
-    <script>
-        function fun<%= project[i].Files[j].fileID %> () {
+<div id="<%= project[i].Files[j].fileID %>">
 
-            var x = document.getElementById(`<%= project[i].Files[j].fileID %>`);
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-        }
-    </script>
         <%= project[i].Files[j].fileName %>
-    <div id="myDIV">
-    <%= project[i].Files[j].fileType %>
-    </div>
+        <%= project[i].Files[j].fileType %>
+
 
 </div>
     <%}%>
-
-
-
-
 <%}%>
 
-<form method="post" action="/project">
-    Project:<input type="text" id="file" name="projectName"/>
-    <span>File Name:<input type="text" id="file" name="name"/> Type:<input type="text" id="type" name="type"></span>
-    <div id="wrapper">
-        <span>Field:<input type="text" id="field" name="field"/> Data:<input type="text" id="data" name="data"> Comments:<input type="text" id="comments" name="comments"></span>
-        <input type="hidden" id="count" name="count">
-    </div>
-    <button type="submit">Submit</button>
-</form>
-<button onclick="add_fields(); countFields()">+</button>
 </div>
-<div class="col-md-6">
+        <div class="form-group col-md-6">
+
+    <button onclick="fun()">New Project</button>
+
+            <br>
+            <br>
+            <form method="post" action="/project">
+                <div id="newProject"  style="display: none">
+                    <h4>Project: </h4><input type="text" id="file" name="projectName"/>
+                    <br>
+                    <br>
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+
+
+</div>
+<div class="col-md-4">
     <div class="row">
     <h1>Output</h1>
-    <textarea class="col-md-8 h-25">
-        test
+    <textarea class="col-md-8" style="resize: none">
+
     </textarea>
     </div>
 </div>
