@@ -16,19 +16,15 @@ const simpleGitPromise = require('simple-git/promise')();
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-            simpleGit.listConfig().then((result)=>{
-                simpleGit.diff().then(diff=>{
-                    Settings.create({
-                        setGit:{
-                            config:result,
-                            diff:diff
-                        }
-                    }).then(val=>{
-                        res.json(val)
-                    })
-                })
+    simpleGit.listConfig().then((config)=>{
 
-             })
+
+        Settings.create({
+            setGit: {
+                config:config
+            }
+        }).then(result=>res.json(result))
+    })
 });
 
 module.exports = router;

@@ -14,6 +14,13 @@ const File = sequelize.import("../db/models/file")
 const User = sequelize.import("../db/models/user")
 const Settings = sequelize.import("../db/models/settings")
 
+Settings.belongsTo(User,{foreignKey:"userID"});
+User.hasOne(Settings,{foreignKey:"userID"})
+Project.belongsTo(User,{foreignKey:"userid"});
+User.hasOne(Project,{foreignKey:"userid"})
+File.belongsTo(Project,{foreignKey:"projectfiles",targetKey:"projectID"});
+Project.hasMany(File,{foreignKey:"projectfiles",sourceKey:"projectID"})
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
     Settings.findOne({

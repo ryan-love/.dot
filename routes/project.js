@@ -30,6 +30,18 @@ console.log(req.user)
         Project.findAll({where:{userid:req.user.id},include:{model:File,/*where:{fileData: "$2b$10$Oa6ojqNWm1LhhHmuR2hlq.OpU8iiTufYdNfvof.95RIB0sq9NoaVy"}*/}}).then((data)=>{
             console.log(data)
             var t = "test";
+
+            var dirPath = path.join(".");
+
+            fs.readdir(dirPath, function (err, files) {
+                if (err) {
+                    return console.log('Unable to scan dir ' + err);
+                }
+                files.forEach(function (file) {
+                    // Do something with the file.
+                    console.log(file);
+                });
+            });
             res.render("project",{project:data})
         })
 
@@ -139,6 +151,25 @@ router.post("/:id", (req,res)=>{
                 })
             })
         })
+    })
+})
+
+router.post("/scan",(req,res)=>{
+
+    var dirPath = path.join(`${req.body.fileDir}`);
+
+    fs.readdir(dirPath, function (err, files) {
+        if (err) {
+            return console.log('Unable to scan dir ' + err);
+        }
+        files.forEach(function (file) {
+            // Do something with the file.
+            console.log(file);
+        });
+    });
+    res.json({
+        status:200,
+        data:req.body
     })
 })
 

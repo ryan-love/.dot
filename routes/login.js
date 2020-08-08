@@ -8,10 +8,13 @@ const sequelize = new Sequelize(`${process.env.DB_TYPE}://${process.env.DB_USER}
 const Project = sequelize.import("../db/models/project")
 const File = sequelize.import("../db/models/file")
 const User = sequelize.import("../db/models/user")
+const Settings = sequelize.import("../db/models/settings")
 
 //Relationships
+Settings.belongsTo(User,{foreignKey:"userID"});
+User.hasOne(Settings,{foreignKey:"userID"})
 Project.belongsTo(User,{foreignKey:"userid"});
-User.hasMany(Project,{foreignKey:"userid"})
+User.hasOne(Project,{foreignKey:"userid"})
 File.belongsTo(Project,{foreignKey:"projectfiles",targetKey:"projectID"});
 Project.hasMany(File,{foreignKey:"projectfiles",sourceKey:"projectID"})
 
