@@ -134,16 +134,17 @@ router.post("/:id", (req,res)=>{
     bcrypt.hash(req.body.data, 10).then((hashData) => {
         bcrypt.hash(req.body.field, 10).then((hashField) => {
             console.log(sequelize.fn('pgp_sym_encrypt','req.body.field', 'TEST'))
-            
-            File.create({
-                fileID: crypto.randomBytes(10).toString('hex'),
-                fileName: req.body.name,
-                fileField: [hashField],
-                fileData: [hashData],
-                fileType: req.body.type,
-                fileComments: req.body.comments,
-                projectfiles: req.params.id,
-                fileCycle: req.body.cycle
+            User.findOne({where:{id: req.user.id}}).then((pwd)=>{
+                console.log(pwd.password.replace(/$2b$10$/g,`${String.fromCharCode(92)+"$2b"+String.fromCharCode(92)+"$10"+String.fromCharCode(92)}`))
+                File.create({
+                    fileID: crypto.randomBytes(10).toString('hex'),
+                    fileName: sequelize.fn('PGP_SYM_ENCRYPT',`${req.body.name}`,"'"+ pwd.password+"'"),
+                    fileField: [sequelize.fn('PGP_SYM_ENCRYPT',`${req.body.field}`,"'"+ pwd.password+"'")],
+                    fileData: [sequelize.fn('PGP_SYM_ENCRYPT',`${req.body.data}`,"'"+ pwd.password+"'")],
+                    fileType: req.body.type,
+                    fileComments: req.body.comments,
+                    projectfiles: req.params.id,
+                    fileCycle: req.body.cycle
             }).then((file) => {
                 File.findOne({where: {fileID: file.fileID, projectfiles:req.params.id}}).then((data) => {
                     console.log(data)
@@ -176,6 +177,7 @@ router.post("/:id", (req,res)=>{
                 })
             })
         })
+    })
     })
 })
 })
