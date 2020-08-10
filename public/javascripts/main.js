@@ -73,7 +73,9 @@ function setMono() {
 
 
 function add_fields() {
-    document.getElementById('wrapper').innerHTML += '<br><span>Field:<input type="text" id="field" name="field"/> Data:<input type="text" id="data" name="data"></span>\r\n';
+    let field = `<br><span>Field:<input type="text" id="field" name="field"/> Data:<input type="text" id="data" name="data"></span>\r\n`;
+    var wrapper = document.getElementById('wrapper')
+    wrapper.append(field);
 }
 function countFields() {
     console.log(document.getElementById("count").value=document.querySelectorAll('[id^=field]').length)

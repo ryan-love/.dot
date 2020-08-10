@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         fileData: DataTypes.ARRAY(DataTypes.STRING),
         fileType: DataTypes.STRING,
         fileComments: DataTypes.STRING,
+        fileCycle:DataTypes.STRING,
         projectfiles:{
             type:DataTypes.UUID,
             defaultValue:sequelize.UUIDV4

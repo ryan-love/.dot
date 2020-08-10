@@ -11,39 +11,87 @@
 
 <div class="row">
 
-    <div class="form-group col-md-6">
-
-        <button onclick="showReturnForm()">Show Return</button>
-<div id="newReturn" style="display: none">
+    <div class="form-group">
+<div id="newReturn">
         <form method="post" action="/project/<%=data.projectID%>/decrypt">
 
             <h4>Return File Data</h4><input type="text" name="fileData"/>
-            <br>
-            <br>
+
             <button type="submit">Submit</button>
         </form>
 </div>
 <br>
         <br>
 
-        <button onclick="showFileForm()">New File</button>
-        <div id="newFile" style="display: none">
-        <form method="post" action="/project/<%=data.projectID%>">
+        <div id="newFile">
 
-                <span>File Name:<input type="text" id="file" name="name"/> Type:<input type="text" id="type" name="type"></span>
-            <br>
-                <div id="wrapper">
-                    Comments:<input type="text" id="comments" name="comments">
-                    <br>
-                    <span>Field:<input type="text" id="field" name="field"/> Data:<input type="text" id="data" name="data"></span>
-
-                    <input type="hidden" id="count" name="count">
+            <form class="row g-3 needs-validation" novalidate method="post" action="/project/<%=data.projectID%>">
+                <div class="col-md-4">
+                    <label for="validationFile" class="form-label">File Name</label>
+                    <input type="text" class="form-control" id="validationFile" value="KEY" name="name" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
-                <button type="submit">Submit</button>
+                <div class="col-md-4">
+                    <label for="validationCustom02" class="form-label">File Type</label>
+                    <input type="text" class="form-control" id="validationCustom02" value="VALUE" name="type" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="validationCustomUsername" class="form-label">Comments</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
+                        <div class="invalid-feedback">
+                            Please choose a username.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="validationCustom03" class="form-label">Field</label>
+                    <input type="text" class="form-control" id="validationCustom03" name="field" required>
+                    <div class="invalid-feedback">
+                        Please provide a valid city.
+                    </div>
+                </div>
 
-
-
-        </form>
+                <div class="col-md-6">
+                    <label for="validationCustom05" class="form-label">Data</label>
+                    <input type="text" class="form-control" id="validationCustom05" name="data"required>
+                    <div class="invalid-feedback">
+                        Please provide a valid zip.
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="validationCustom04" class="form-label">Project Cycle</label>
+                    <select class="form-select" id="validationCustom04" name="cycle" required>
+                        <option>Production</option>
+                        <option>Development</option>
+                        <option>Testing</option>
+                        <option>Staging</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Please select a valid state.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+                        <label class="form-check-label" for="invalidCheck">
+                            Agree to terms and conditions
+                        </label>
+                        <div class="invalid-feedback">
+                            You must agree before submitting.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <input type="hidden" id="count" name="count">
+                    <button class="btn btn-primary" type="submit">Submit form</button>
+                </div>
+            </form>
         <button onclick="add_fields(); countFields()">+</button>
     </div>
 

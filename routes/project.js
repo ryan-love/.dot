@@ -27,6 +27,22 @@ Project.hasMany(File,{foreignKey:"projectfiles",sourceKey:"projectID"})
 /* GET users listing. */
 router.get("/", authenticationMiddleware(), (req, res) => {
 console.log(req.user)
+    const server = crypto.getDiffieHellman('modp15');
+    const user = crypto.getDiffieHellman('modp15');
+
+    console.log(user.generateKeys())
+    console.log(server.generateKeys())
+
+    var u = user.computeSecret(server.getPublicKey(), null, 'hex')
+    var s = server.computeSecret(user.getPublicKey(), null, 'hex')
+    if (u === s){
+        console.log("PASSWORD")
+    }
+    else {
+        console.log("WRONG")
+    }
+
+
         Project.findAll({where:{userid:req.user.id},include:{model:File,/*where:{fileData: "$2b$10$Oa6ojqNWm1LhhHmuR2hlq.OpU8iiTufYdNfvof.95RIB0sq9NoaVy"}*/}}).then((data)=>{
             console.log(data)
             var t = "test";
@@ -40,6 +56,7 @@ console.log(req.user)
                 files.forEach(function (file) {
                     // Do something with the file.
                     console.log(file);
+
                 });
             });
             res.render("project",{project:data})
@@ -79,9 +96,6 @@ router.get("/:id/file/:fileID", function (req,res,next) {
         res.render("fileEdit",{data:data})
     })
 })
-
-
-
 router.get("/env/download", function (req,res,next) {
     File.findOne({
         where: { projectfiles: "1006d283-4bce-4182-a184-e1573a6400dc"}
@@ -93,7 +107,6 @@ router.get("/env/download", function (req,res,next) {
 
     })
 })
-
 router.post("/:id/decrypt", (req,res)=>{
 
         Project.findOne({where:{projectID:req.params.id},include:File}).then((data) => {
@@ -109,10 +122,19 @@ router.post("/:id/decrypt", (req,res)=>{
         })
 })
 router.post("/:id", (req,res)=>{
+    const server = crypto.getDiffieHellman('modp15');
+    const user = crypto.getDiffieHellman('modp15');
+
+    user.generateKeys()
+    server.generateKeys()
+
+
+    User.findOne({where:{id : req.user.id},attributes:["password"]}).then((result)=>{
 
     bcrypt.hash(req.body.data, 10).then((hashData) => {
-        bcrypt.hash(req.body.data, 10).then((hashField) => {
-
+        bcrypt.hash(req.body.field, 10).then((hashField) => {
+            console.log(sequelize.fn('pgp_sym_encrypt','req.body.field', 'TEST'))
+            
             File.create({
                 fileID: crypto.randomBytes(10).toString('hex'),
                 fileName: req.body.name,
@@ -120,7 +142,8 @@ router.post("/:id", (req,res)=>{
                 fileData: [hashData],
                 fileType: req.body.type,
                 fileComments: req.body.comments,
-                projectfiles: req.params.id
+                projectfiles: req.params.id,
+                fileCycle: req.body.cycle
             }).then((file) => {
                 File.findOne({where: {fileID: file.fileID, projectfiles:req.params.id}}).then((data) => {
                     console.log(data)
@@ -136,14 +159,16 @@ router.post("/:id", (req,res)=>{
                                 fs.appendFile(`${path.join(process.cwd() + "/files")}/${data.projectfiles}/${data.fileID}${data.fileType}`, `${data.fileField}=${data.fileData}\r\n`, function (err) {
                                     if (err) throw err;
                                     console.log('Saved!');
-                                    res.send(data)
+                                        res.send(data)
+
                                 });
                             } else {
                                 fs.mkdirSync(dir);
                                 fs.appendFile(`${path.join(process.cwd() + "/files")}/${data.projectfiles}/${data.fileID}${data.fileType}`, `${data.fileField}=${data.fileData}\r\n`, function (err) {
                                     if (err) throw err;
                                     console.log('Saved!');
-                                    res.send(data)
+                                    res.send(data + [server.computeSecret(user.getPublicKey(), null, 'hex')]
+                                        ,[user.computeSecret(server.getPublicKey(), null, 'hex')],)
                                 });
                             }
                         }
@@ -152,6 +177,7 @@ router.post("/:id", (req,res)=>{
             })
         })
     })
+})
 })
 
 router.post("/scan",(req,res)=>{
